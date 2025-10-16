@@ -23,24 +23,24 @@ st.title("Tacrolimus Plasma Concentration Predictor")
 # ===============================
 # 3. 定义输入变量
 # ===============================
-continuous_columns = ['Total daily dose','CL/F','BUN','BMI','ALB','NE#','CCR','IBIL','Dosing time']  #分类变量
+continuous_columns = ['Total_daily_dose','CL_F','BUN','BMI','ALB','NE','CCR','IBIL','Dosing_time']  #分类变量
 #columns_to_copy = ['CYP3A5']  # 分类变量
 
 # 在 Streamlit 界面上创建输入框
 st.sidebar.header("Please enter the patient's details")
 
-Total daily dose = st.sidebar.number_input("Total daily dose (mg):", min_value=0.5, max_value=10.0, value=5.0)
-CL/F = st.sidebar.number_input("CL/F (L/h):", min_value=15.0, max_value=30.0, value=22.5)
+Total_daily_dose = st.sidebar.number_input("Total daily dose (mg):", min_value=0.5, max_value=10.0, value=5.0)
+CL_F = st.sidebar.number_input("CL/F (L/h):", min_value=15.0, max_value=30.0, value=22.5)
 BUN = st.sidebar.number_input("BUN (mmol/L):", min_value=2.0, max_value=40.0, value=11.5)
 BMI = st.sidebar.number_input("BMI (kg/m²):", min_value=15.0, max_value=40.0, value=24.5)
 ALB = st.sidebar.number_input("ALB (g/L):", min_value=10.0, max_value=60.0, value=35.0)
-NE# = st.sidebar.number_input("NE# (10⁹/L):", min_value=0.5, max_value=25.0, value=6.5)
+NE = st.sidebar.number_input("NE# (10⁹/L):", min_value=0.5, max_value=25.0, value=6.5)
 CCR = st.sidebar.number_input("CCR (mL/min):", min_value=15.0, max_value=350.0, value=115.0)
 IBIL = st.sidebar.number_input("IBIL (µmol/L):", min_value=0.0, max_value=10.0, value=5.0)
-Dosing time = st.sidebar.number_input("Dosing time (day):", min_value=0.0, max_value=500.0, value=200.0)
+Dosing_time = st.sidebar.number_input("Dosing time (day):", min_value=0.0, max_value=500.0, value=200.0)
 
 # 汇总输入
-input_data = np.array([[Total daily dose, CL/F, BUN, BMI, ALB, NE#, CCR, IBIL,Dosing time]])
+input_data = np.array([[Total_daily_dose, CL_F, BUN, BMI, ALB, NE, CCR, IBIL,Dosing_time]])
 
 # 转换为 DataFrame，便于后续标准化与 SHAP 解释
 input_df = pd.DataFrame(input_data, columns=continuous_columns)
@@ -97,4 +97,5 @@ st.markdown("""
 -This model is a continuous prediction, outputting blood drug concentration (ng/mL).
 - '±20%' denotes an empirical confidence interval, within which actual plasma drug concentrations are considered reasonable.
 - SHAP values can be used to observe the direction and magnitude of the influence of features on individual predictions.。
+
 """)
