@@ -67,21 +67,29 @@ if st.button("Predict Tacrolimus Plasma Concentration"):
     st.write(f"Estimated range: {lower_bound:.2f} – {upper_bound:.2f} ng/mL")
 
 # ===============================
-# 6. SHAP 力图解释
+# 6. SHAP 力图解释（带空格/符号的特征名）
 # ===============================
-st.subheader("🔍 SHAP Force Plot Explanation")
+st.subheader("🔍 SHAP Feature Importance Explanation")
 
 try:
-    # 使用训练数据的小样本作为背景（用于SHAP解释）
+    # 使用训练数据的小样本作为背景
     df_train = pd.read_csv('train.csv', encoding='utf-8')
     X_train = df_train[continuous_columns]
     X_train_scaled = scaler.transform(X_train)
 
-    # 建立解释器（新版API）
-    explainer = shap.Explainer(model.predict, X_train_scaled[:50])  # 用50个样本作为背景加速
-    shap_values = explainer(input_scaled)  # 计算当前输入的SHAP值（新版接口）
+    # 设置模型输入列名与展示列名
+    continuous_columns = ['Total_daily_dose','CL_F','BUN','BMI','ALB','NE','CCR','IBIL','Dosing_time']
+    display_names = ['Total daily dose','CL/F','BUN','BMI','ALB','NE#','CCR','IBIL','Dosing time']
 
-    # 使用 waterfall 图（更清晰、稳定）
+    # 构建 DataFrame 并替换列名为展示名
+    X_train_scaled_df = pd.DataFrame(X_train_scaled[:50], columns=display_names)
+    input_scaled_df = pd.DataFrame(input_scaled, columns=display_names)
+
+    # 建立解释器
+    explainer = shap.Explainer(model.predict, X_train_scaled_df)
+    shap_values = explainer(input_scaled_df)
+
+    # 绘制 waterfall 图
     plt.figure(figsize=(8, 6))
     shap.plots.waterfall(shap_values[0], show=False)
     plt.tight_layout()
@@ -103,5 +111,6 @@ st.markdown("""
 - SHAP values can be used to observe the direction and magnitude of the influence of features on individual predictions.。
 
 """)
+
 
 
