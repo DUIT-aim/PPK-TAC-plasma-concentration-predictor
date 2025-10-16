@@ -73,7 +73,7 @@ if st.button("Predict Tacrolimus Plasma Concentration"):
 
     # 使用 Explainer 解释模型（适用于任意回归模型）
     # 注意：使用训练数据中的样本子集可以显著加快速度
-    df_train = pd.read_csv('train_data.csv', encoding='utf-8')  # 需替换为你的训练集路径
+    df_train = pd.read_csv('train.csv', encoding='utf-8')  # 需替换为你的训练集路径
     X_train = df_train[continuous_columns]
     X_train_scaled = scaler.transform(X_train)
 
@@ -99,3 +99,4 @@ st.markdown("""
 - SHAP values can be used to observe the direction and magnitude of the influence of features on individual predictions.。
 
 """)
+
