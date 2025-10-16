@@ -66,27 +66,31 @@ if st.button("Predict Tacrolimus Plasma Concentration"):
     st.write(f"**Tacrolimus Plasma Concentration = {predicted_value:.2f} ± 20% ng/mL**")
     st.write(f"Estimated range: {lower_bound:.2f} – {upper_bound:.2f} ng/mL")
 
-    # ===============================
-    # 6. SHAP 力图解释
-    # ===============================
-    st.subheader("🔍 SHAP Force Plot Explanation")
+# ===============================
+# 6. SHAP 力图解释
+# ===============================
+st.subheader("🔍 SHAP Force Plot Explanation")
 
-    # 使用 Explainer 解释模型（适用于任意回归模型）
-    # 注意：使用训练数据中的样本子集可以显著加快速度
-    df_train = pd.read_csv('train.csv', encoding='utf-8')  # 需替换为你的训练集路径
+try:
+    # 使用训练数据的小样本作为背景（用于SHAP解释）
+    df_train = pd.read_csv('train.csv', encoding='utf-8')
     X_train = df_train[continuous_columns]
     X_train_scaled = scaler.transform(X_train)
 
-    explainer = shap.Explainer(model.predict, X_train_scaled[:50])  # 使用部分样本加速
-    shap_values = explainer.shap_values(input_scaled)
+    # 建立解释器（新版API）
+    explainer = shap.Explainer(model.predict, X_train_scaled[:50])  # 用50个样本作为背景加速
+    shap_values = explainer(input_scaled)  # 计算当前输入的SHAP值（新版接口）
 
-    # 绘制 SHAP 力图
-    shap.force_plot(explainer.expected_value, shap_values, input_df, matplotlib=True)
-    plt.savefig("SHAP force plot.png", bbox_inches='tight', dpi=1200)
-    st.image("SHAP force plot.png", caption='SHAP Force Plot (Feature Contributions)', use_container_width=True)
+    # 使用 waterfall 图（更清晰、稳定）
+    plt.figure(figsize=(8, 6))
+    shap.plots.waterfall(shap_values[0], show=False)
+    plt.tight_layout()
+    plt.savefig("SHAP_force_plot.png", bbox_inches='tight', dpi=300)
+    st.image("SHAP_force_plot.png", caption='SHAP Feature Importance (Waterfall)', use_container_width=True)
 
-    # 提示
-    st.markdown("⚙️ **Interpretation:** Positive values indicate an increase in the predicted concentration for that characteristic, while negative values indicate a decrease.")
+    st.markdown("⚙️ **Interpretation:** Positive values increase the predicted concentration; negative values decrease it.")
+except Exception as e:
+    st.error(f"⚠️ SHAP explanation failed: {e}")
 
 # ===============================
 # 7. 教学提示
@@ -99,4 +103,5 @@ st.markdown("""
 - SHAP values can be used to observe the direction and magnitude of the influence of features on individual predictions.。
 
 """)
+
 
